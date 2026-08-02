@@ -1,4 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+const normalizeApiBase = (value?: string) =>
+  value ? `${value.replace(/\/+$/, '')}/` : '';
+
 export default defineNuxtConfig({
   // ssr: true,
   compatibilityDate: '2024-11-01',
@@ -6,10 +9,11 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      apiBase:
+      apiBase: normalizeApiBase(
         process.env.NUXT_ENV === 'development'
           ? process.env.DEV_API_URL
-          : process.env.PROD_API_URL,
+          : process.env.PROD_API_URL
+      ),
     },
   },
 

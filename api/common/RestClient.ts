@@ -2,6 +2,14 @@ import type { $Fetch, NitroFetchRequest } from 'nitropack';
 import type { UseFetchOptions } from '#app';
 import type Configuration from './Configuration';
 
+const joinUrlSegments = (...segments: string[]) =>
+  `${segments
+    .filter(Boolean)
+    .map((segment, index) =>
+      index === 0 ? segment.replace(/\/+$/, '') : segment.replace(/^\/+|\/+$/g, '')
+    )
+    .join('/')}/`;
+
 export default class RestClient {
   private readonly _baseUrl: string;
   private readonly _prefix: string;
@@ -13,7 +21,7 @@ export default class RestClient {
     this._baseUrl = configuration.baseUrl;
     this._prefix = configuration.prefix ?? '';
     this._requestTimeout = configuration.requestTimeout;
-    this._clientUrl = `${this._baseUrl}${this._prefix}/`;
+    this._clientUrl = joinUrlSegments(this._baseUrl, this._prefix);
 
     this.clientSideFetch = $fetch.create({
       baseURL: this._clientUrl,
