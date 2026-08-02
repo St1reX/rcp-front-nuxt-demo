@@ -1,8 +1,13 @@
 import { z } from 'zod';
 
+const OptionalUserIdSchema = z.preprocess(
+  (value) => (value === '' || value === null ? undefined : value),
+  z.string().uuid('User id must be UUID').optional()
+);
+
 export const CreateDepartmentSchema = z.object({
   name: z.string().min(1, 'Department name is required'),
-  userId: z.string().uuid('User id must be UUID'),
+  userId: OptionalUserIdSchema,
 });
 
 export type CreateDepartmentRequest = z.infer<typeof CreateDepartmentSchema>;

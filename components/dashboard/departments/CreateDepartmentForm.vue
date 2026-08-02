@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { FormSubmitEvent } from '#ui/types';
-import { FetchError } from 'ofetch';
 import {
   CreateDepartmentSchema,
   type CreateDepartmentRequest,
@@ -33,7 +32,7 @@ const onSubmit = async (event: FormSubmitEvent<CreateDepartmentRequest>) => {
   try {
     await api.department.create({
       name: state.name as string,
-      userId: state.userId as string,
+      userId: state.userId || undefined,
     });
 
     toast.add({
@@ -64,16 +63,6 @@ const fetchLeavesRequester = async () => {
         leaveRequesters.value.push(requester);
       }
     });
-
-    if (!leaveRequesters.value.length) {
-      toast.add({
-        title: `Brak dostępnych kont grupowych`,
-        description:
-          'W systemie nie ma dostępnego żadnego nieprzypisanego konta grupowego. Dodaj nowe konto grupowe, aby móc je przypisać do działu podczas tworzenia.',
-        color: 'error',
-        duration: 6000,
-      });
-    }
   } catch (e: any) {
     useFetchErrorHandler('Konto grupowe', e);
   }
@@ -103,11 +92,12 @@ onMounted(async () => {
             type="text"
           />
         </UFormField>
-        <UFormField label="Mail (konta zbiorowego)" name="departmentId">
+        <UFormField label="Mail (konta zbiorowego)" name="userId">
           <USelect
             v-model="state.userId"
             value-key="id"
             :items="leaveRequesters"
+            placeholder="Brak"
             class="w-full"
           />
         </UFormField>
